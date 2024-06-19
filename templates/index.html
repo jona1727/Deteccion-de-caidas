@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url('../static/fondo7.png') no-repeat center center/cover;
+            background-size: cover;
+        }
+
+        ::selection {
+            color: #fff;
+            background: #53f0e3;
+        }
+
+        .overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; /* Hide overlay by default */
+        }
+
+        .wrapper {
+            position: relative;
+            z-index: 1;
+            width: 380px;
+            padding: 40px 30px 50px 30px;
+            background: rgba(44, 44, 44, 0.8); /* More transparent black */
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .wrapper header {
+            font-size: 35px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .wrapper form {
+            margin: 20px 0;
+        }
+
+        form .field {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        form .field .input-area {
+            height: 50px;
+            width: 100%;
+            position: relative;
+        }
+
+        form input {
+            width: 100%;
+            height: 100%;
+            outline: none;
+            padding: 0 45px;
+            font-size: 16px;
+            background: none;
+            caret-color: #5372F0;
+            border-radius: 5px;
+            border: 1px solid #555;
+            border-bottom-width: 2px;
+            color: #fff;
+            transition: all 0.2s ease;
+        }
+
+        form .field input:focus,
+        form .field.valid input {
+            border-color: #5372F0;
+        }
+
+        form .field.shake input,
+        form .field.error input {
+            border-color: #dc3545;
+        }
+
+        .field .input-area i {
+            position: absolute;
+            top: 50%;
+            font-size: 18px;
+            pointer-events: none;
+            transform: translateY(-50%);
+        }
+
+        .input-area .icon {
+            left: 15px;
+            color: #555;
+            transition: color 0.2s ease;
+        }
+
+        .input-area .error-icon {
+            right: 15px;
+            color: #dc3545;
+        }
+
+        form input:focus~.icon,
+        form .field.valid .icon {
+            color: #5372F0;
+        }
+
+        form input::placeholder {
+            color: #aaa;
+            font-size: 16px;
+        }
+
+        form .field .error-txt {
+            color: #dc3545;
+            text-align: left;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        form input[type="submit"] {
+            height: 50px;
+            margin-top: 30px;
+            color: #fff;
+            padding: 0;
+            border: none;
+            background: #5372F0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        form input[type="submit"]:hover {
+            background: #2c52ed;
+        }
+
+        .welcome-message {
+            color: #2ecc71; /* Color verde para mensaje de bienvenida */
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="overlay" id="overlay"></div>
+    <div class="wrapper">
+        <header>Ingreso</header>
+        <form id="registrationForm" action="#">
+            <div class="field email">
+                <div class="input-area">
+                    <input type="text" id="username" placeholder="Usuario">
+                    <i class="error error-icon fas fa-exclamation-circle"></i>
+                </div>
+                <div class="error-txt" id="usernameError"></div>
+            </div>
+            <div class="field password">
+                <div class="input-area">
+                    <input type="password" id="password" placeholder="Contraseña">
+                    <i class="error error-icon fas fa-exclamation-circle"></i>
+                </div>
+                <div class="error-txt" id="passwordError"></div>
+            </div>
+            <button type="button" id="submitBtn">INICIAR</button>
+            <div class="welcome-message" id="welcomeMessage"></div>
+            <div class="error-message" id="loginError"></div>
+        </form>
+    </div>
+
+    <script>
+        const overlay = document.getElementById('overlay');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('loginError');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+
+        // Show overlay when focusing on input fields
+        usernameInput.addEventListener('focus', function () {
+            overlay.style.display = 'block';
+        });
+
+        passwordInput.addEventListener('focus', function () {
+            overlay.style.display = 'block';
+        });
+
+        // Hide overlay when focus is lost from input fields
+        usernameInput.addEventListener('blur', function () {
+            overlay.style.display = 'none';
+        });
+
+        passwordInput.addEventListener('blur', function () {
+            overlay.style.display = 'none';
+        });
+
+        document.getElementById('submitBtn').addEventListener('click', function () {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            let isValid = true;
+
+            if (username !== "Cuidador" || password !== "12345") {
+                loginError.innerText = "Usuario o contraseña incorrectos.";
+                isValid = false;
+            } else {
+                welcomeMessage.innerText = `¡Bienvenido, ${username}!`;
+                setTimeout(() => {
+                    // Enviar los datos al servidor
+                    fetch('http://127.0.0.1:5000/video2', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username: username, password: password })
+                    })
+                        .then(response => response.text())
+                        .then(data => {
+                            document.body.innerHTML = data;
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                }, 2000); // Espera 2 segundos antes de enviar los datos
+            }
+
+            // Limpiar mensajes de error después de 5 segundos
+            setTimeout(() => {
+                loginError.innerText = "";
+                welcomeMessage.innerText = "";
+            }, 5000);
+        });
+    </script>
+</body>
+
+</html>
